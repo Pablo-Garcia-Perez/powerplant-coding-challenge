@@ -1,0 +1,19 @@
+# Virtual environment files
+powerplant/
+venv/
+.env/
+ENV/
+
+# Python specific ignores
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.swp
+
+# IDE specific files
+.vscode/
+.idea/
+
+# System files
+.DS_Store
+Thumbs.db
