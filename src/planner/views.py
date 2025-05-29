@@ -84,7 +84,8 @@ class ProductionPlanView(APIView):
                     return Response({"error": "Unable to meet the load with given constraints."}, 
                                   status=status.HTTP_400_BAD_REQUEST)
 
-            response = [{"name": name, "p": power} for name, power in allocated_power.items()]
+            response = [{"name": name, "p": allocated_power[name]} for name in sorted(allocated_power.keys(), 
+                        key=lambda x: (not x.startswith("wind"), x))]
             return Response(response, status=status.HTTP_200_OK)
 
         except Exception as e:
