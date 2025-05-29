@@ -55,7 +55,5 @@ API will be available at: `http://localhost:8888`
 #### Example Usage (must be within the project main directory):
 
 ```bash
-curl -X POST http://localhost:8888/productionplan \
-  -H "Content-Type: application/json" \
-  --data @example_payloads/payload3.json
+curl -X POST http://localhost:8888/productionplan -H "Content-Type: application/json" --data @example_payloads/payload3.json
   ```
