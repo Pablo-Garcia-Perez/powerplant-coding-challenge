@@ -31,7 +31,7 @@ API will be available at: `http://localhost:8888`
     source venv/bin/activate
     ```
 
-2.  **Install dependencies**:
+2.  **Install dependencies (Linux-based)**:
     ```bash
     pip install -r requirements.txt
     ```
@@ -41,7 +41,7 @@ API will be available at: `http://localhost:8888`
     python src/manage.py runserver 8888
     ```
 
-API will be available at: `http://localhost:8888`
+API will be available at: `http://127.0.0.1:8888`
 
 ---
 
@@ -56,4 +56,6 @@ API will be available at: `http://localhost:8888`
 
 ```bash
 curl -X POST http://localhost:8888/productionplan -H "Content-Type: application/json" --data @example_payloads/payload3.json
+curl -X POST http://127.0.0.1:8888/productionplan -H "Content-Type: application/json" --data @example_payloads/payload3.json
+
   ```

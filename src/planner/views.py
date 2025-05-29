@@ -6,14 +6,83 @@ from rest_framework import status
 logger = logging.getLogger(__name__)
 
 class ProductionPlanView(APIView):
-    def post(self, request):
+    def post(self, request):        
         try:
+            if not request.data:
+                return Response(
+                    {"error": "No data provided in request body."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
             load = request.data.get("load")
             fuels = request.data.get("fuels")
             powerplants = request.data.get("powerplants")
-
+            
+            # Data integrity validation
             if load is None or fuels is None or powerplants is None:
                 return Response({"error": "Missing required fields."}, status=status.HTTP_400_BAD_REQUEST)
+            
+            if not isinstance(load, (int, float)) or load < 0:
+                return Response(
+                    {"error": "'load' must be a positive number."},
+                    status=status.HTTP_400_BAD_REQUEST
+            )
+
+            if not isinstance(fuels, dict):
+                return Response(
+                    {"error": "'fuels' must be a dictionary."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            if not isinstance(powerplants, list):
+                return Response(
+                    {"error": "'powerplants' must be a list."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+                
+            valid_plant_types = ["gasfired", "turbojet", "windturbine"]
+            for i, plant in enumerate(powerplants):
+                if not isinstance(plant, dict):
+                    return Response(
+                        {"error": f"Powerplant {i} must be a dictionary."},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+            
+                if "name" not in plant or not plant["name"]:
+                    return Response(
+                        {"error": f"Powerplant {i} is missing a valid 'name'."},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                
+                if "type" not in plant or plant["type"] not in valid_plant_types:
+                    return Response(
+                        {"error": f"Powerplant {i} has invalid type. Must be one of: {', '.join(valid_plant_types)}"},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                
+                if "efficiency" not in plant or not isinstance(plant["efficiency"], (int, float)) or not (0 < plant["efficiency"] <= 1):
+                    return Response(
+                        {"error": f"Powerplant {plant['name']} has invalid efficiency. Must be between 0 and 1."},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                
+                if "pmin" not in plant or not isinstance(plant["pmin"], (int, float)) or plant["pmin"] < 0:
+                    return Response(
+                        {"error": f"Powerplant {plant['name']} has invalid pmin. Must be a positive number."},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                
+                if "pmax" not in plant or not isinstance(plant["pmax"], (int, float)) or plant["pmax"] <= 0:
+                    return Response(
+                        {"error": f"Powerplant {plant['name']} has invalid pmax. Must be a positive number."},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                
+                if plant["pmin"] > plant["pmax"]:
+                    return Response(
+                        {"error": f"Powerplant {plant['name']} has pmin greater than pmax."},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+
 
             # We will define an array in which we will append power plants in dict format with all their information
             processed_plants = []
